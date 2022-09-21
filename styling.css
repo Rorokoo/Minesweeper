@@ -1,5 +1,6 @@
 .board-container{
     border: 2px solid blue;
+    margin-top:20px;
 }
  
 
@@ -10,7 +11,7 @@
     width:500px;
     height:500px;
     border: 2px solid black;
-    margin: 0 auto;
+    margin: 20px auto;
 }
 
 
@@ -23,4 +24,8 @@
     text-align: center;
     
     
+  }
+
+  .timer{
+    font-size:40px
   }

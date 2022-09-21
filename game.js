@@ -4,34 +4,36 @@ const gCell = {
   minesAroundCount: 0,
   isShown: false,
   isMine: false,
-  isMarked: true,
+  isMarked: false,
 }
 
 var gLevel = { SIZE: 4, MINES: 2 }
 
-var gGame = {
-  isOn: false,
-  shownCount: 0,
-  markedCount: 0,
-  secsPassed: 0,
-}
+var gGame
 
+const MINE = '💣'
+
+var gStartTime
+
+var gSecInterval
+
+var gMineLocations = []
 
 function initGame() {
-  //This is called when page loads
+  gGame = {
+    isOn: false,
+    shownCount: 0,
+    markedCount: 0,
+    secsPassed: 0,
+  }
+
+  gMineLocations = []
 
   buildBoard()
   renderBoard(gBoard)
-
-  console.log('gBoard:', gBoard)
 }
 
 function buildBoard() {
-  // Builds the board
-  // Set mines at random locations
-  // Call setMinesNegsCount()
-  // Return the created board
-
   gBoard = []
   for (var i = 0; i < gLevel.SIZE; i++) {
     gBoard.push([])
@@ -39,11 +41,11 @@ function buildBoard() {
       gBoard[i][j] = { ...gCell }
     }
   }
-  ///////
+
   for (var i = 0; i < gLevel.MINES; i++) {
     putMine(gBoard)
   }
-  ////////
+
   setMinesNegsCount(gBoard)
 }
 
@@ -76,7 +78,7 @@ function renderBoard(board) {
     for (var j = 0; j < board[0].length; j++) {
       const className = `cell cell-${i}-${j}`
 
-      strHTML += `<td onclick= "cellClicked(this, ${i}, ${j})" class="${className}"></td>`
+      strHTML += `<td  onclick= "cellClicked(this, ${i}, ${j})" oncontextmenu="cellMarked(event, ${i}, ${j})" class="${className}"></td>`
     }
     strHTML += '</tr>'
   }
@@ -89,24 +91,51 @@ function renderBoard(board) {
 function cellClicked(elCell, i, j) {
   var cell = gBoard[i][j]
 
+  if (cell.isMine) {
+    loseGame()
+    return
+  }
+
+  if (!gGame.isOn) {
+    gGame.isOn = true
+    startTimer()
+  }
+
+  if (cell.isMarked) return
+
   cell.isShown = true
 
-  elCell.innerText = cell.isMine ? '💣' : `${cell.minesAroundCount}`
+  elCell.innerText = cell.minesAroundCount
 }
-// Called when a cell (td) is
-// clicked
 
-function cellMarked(elCell) {}
-// Called on right click to mark a
-// cell (suspected to be a mine)
-// Search the web (and
-// implement) how to hide the
-// context menu on right click
+function cellMarked(event, i, j) {
+  event.preventDefault()
 
-function checkGameOver() {}
-// Game ends when all mines are
-// marked, and all the other cells
-// are shown
+  if (!gGame.isOn) {
+    gGame.isOn = true
+    startTimer()
+  }
+
+  var cell = gBoard[i][j]
+
+  if (cell.isShown) return
+
+  if (cell.isMarked) {
+    cell.isMarked = false
+    gGame.markedCount -= 1
+  } else {
+    cell.isMarked = true
+    gGame.markedCount += 1
+  }
+
+  event.target.innerText = cell.isMarked ? '🚩' : ''
+}
+
+function checkGameOver() {
+  // Game ends when all mines are
+  // marked, and all the other cells
+  // are shown
+}
 
 function expandShown(board, elCell, i, j) {}
 // When user clicks a cell with no
@@ -132,8 +161,34 @@ function putMine(board) {
     if (!board[i][j].isMine) {
       mineInCell = false
       board[i][j].isMine = true
+      gMineLocations.push({ i: i, j: j })
     }
   }
+}
+
+function loseGame() {
+  gGame.isOn = false
+  clearInterval(gSecInterval)
+  for (var y = 0; y < gMineLocations.length; y++) {
+    var i = gMineLocations[y].i
+    var j = gMineLocations[y].j
+    var cellHTML = document.querySelector(`.cell-${i}-${j}`)
+    cellHTML.innerHTML = MINE
+  }
+}
+
+function restartGame() {}
+
+function startTimer() {
+  gStartTime = Date.now()
+  gSecInterval = setInterval(updateTimer, 100)
+}
+
+function updateTimer() {
+  var diff = Date.now() - gStartTime
+  var inSeconds = (diff / 1000).toFixed(0)
+  gGame.secsPassed = inSeconds
+  document.querySelector('.timer span').innerText = inSeconds
 }
 
 function getRandomIntInclusive(min, max) {
