@@ -1,0 +1,26 @@
+.board-container{
+    border: 2px solid blue;
+}
+ 
+
+
+
+
+ table{
+    width:500px;
+    height:500px;
+    border: 2px solid black;
+    margin: 0 auto;
+}
+
+
+
+.cell {
+    border:2px solid black;
+    width: 40px;
+    height: 40px;
+    font-size:20px;
+    text-align: center;
+    
+    
+  }
