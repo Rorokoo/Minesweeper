@@ -16,7 +16,6 @@ var gGame = {
   secsPassed: 0,
 }
 
-const htmlMine = '💣'
 
 function initGame() {
   //This is called when page loads
