@@ -1,12 +1,5 @@
 var gBoard
 
-const gCell = {
-  minesAroundCount: 0,
-  isShown: false,
-  isMine: false,
-  isMarked: false,
-}
-
 const MINE = '💣'
 
 var gLevel = { SIZE: 4, MINES: 2 }
@@ -40,7 +33,12 @@ function buildBoard() {
   for (var i = 0; i < gLevel.SIZE; i++) {
     gBoard.push([])
     for (var j = 0; j < gLevel.SIZE; j++) {
-      gBoard[i][j] = { ...gCell }
+      gBoard[i][j] = {
+        minesAroundCount: 0,
+        isShown: false,
+        isMine: false,
+        isMarked: false,
+      }
     }
   }
 
