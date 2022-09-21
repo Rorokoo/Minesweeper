@@ -14,6 +14,16 @@
     margin: 20px auto;
 }
 
+.levels{
+  text-align: center;    
+}
+
+.levels button{
+
+  font-size: 20px;
+  margin: 10px;
+}
+
 
 
 .cell {
@@ -27,5 +37,6 @@
   }
 
   .timer{
-    font-size:40px
+    font-size:40px;
+    padding-bottom:30px;
   }

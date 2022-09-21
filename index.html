@@ -9,6 +9,11 @@
 </head>
 <body onload="initGame()">
     <div class="timer">Timer: <span></span></div>
+   <div class="levels">
+    <button onclick= "startLevel(this)" data-size="4" data-mines="2">Easy(4X4) </button>
+    <button onclick= "startLevel(this)" data-size="8" data-mines="14">Medium(8X8)</button>
+    <button onclick= "startLevel(this)" data-size="12" data-mines="32">Hard(12X12)</button>
+</div>
     <div class="board-container"></div>
     
     <script src="game.js"></script>

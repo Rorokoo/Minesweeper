@@ -7,11 +7,11 @@ const gCell = {
   isMarked: false,
 }
 
+const MINE = '💣'
+
 var gLevel = { SIZE: 4, MINES: 2 }
 
 var gGame
-
-const MINE = '💣'
 
 var gStartTime
 
@@ -31,6 +31,8 @@ function initGame() {
 
   buildBoard()
   renderBoard(gBoard)
+  var timer = document.querySelector('.timer span')
+  timer.innerText = gGame.secsPassed
 }
 
 function buildBoard() {
@@ -50,8 +52,6 @@ function buildBoard() {
 }
 
 function setMinesNegsCount(board) {
-  // Count mines around each cell
-  // and set the cell's minesAroundCount.
   for (var i = 0; i < board.length; i++) {
     for (var j = 0; j < board.length; j++) {
       var checkedCell = board[i][j]
@@ -96,16 +96,22 @@ function cellClicked(elCell, i, j) {
     return
   }
 
+  if (cell.isMarked) return
+
   if (!gGame.isOn) {
     gGame.isOn = true
     startTimer()
   }
 
-  if (cell.isMarked) return
-
   cell.isShown = true
+  gGame.shownCount += 1
 
   elCell.innerText = cell.minesAroundCount
+  if (cell.minesAroundCount === 0) {
+    openNeighbors(i, j)
+  }
+
+  checkGameOver()
 }
 
 function cellMarked(event, i, j) {
@@ -129,12 +135,19 @@ function cellMarked(event, i, j) {
   }
 
   event.target.innerText = cell.isMarked ? '🚩' : ''
+
+  checkGameOver()
 }
 
 function checkGameOver() {
-  // Game ends when all mines are
-  // marked, and all the other cells
-  // are shown
+  var board = document.querySelector('table')
+
+  if (gGame.shownCount + gGame.markedCount === gLevel.SIZE ** 2) {
+    gGame.isOn = false
+    clearInterval(gSecInterval)
+    board.style.pointerEvents = 'none'
+    alert('victory!')
+  }
 }
 
 function expandShown(board, elCell, i, j) {}
@@ -168,6 +181,11 @@ function putMine(board) {
 
 function loseGame() {
   gGame.isOn = false
+
+  var board = document.querySelector('table')
+
+  board.style.pointerEvents = 'none'
+
   clearInterval(gSecInterval)
   for (var y = 0; y < gMineLocations.length; y++) {
     var i = gMineLocations[y].i
@@ -176,8 +194,6 @@ function loseGame() {
     cellHTML.innerHTML = MINE
   }
 }
-
-function restartGame() {}
 
 function startTimer() {
   gStartTime = Date.now()
@@ -188,7 +204,34 @@ function updateTimer() {
   var diff = Date.now() - gStartTime
   var inSeconds = (diff / 1000).toFixed(0)
   gGame.secsPassed = inSeconds
-  document.querySelector('.timer span').innerText = inSeconds
+  document.querySelector('.timer span').innerText = gGame.secsPassed
+}
+
+function startLevel(elButton) {
+  clearInterval(gSecInterval)
+
+  var size = elButton.dataset.size
+  var mines = elButton.dataset.mines
+
+  gLevel.SIZE = size
+  gLevel.MINES = mines
+
+  initGame()
+}
+
+function openNeighbors(row, col) {
+  for (var i = row - 1; i <= row + 1; i++) {
+    if (i < 0 || i >= gBoard.length) continue
+    for (var j = col - 1; j <= col + 1; j++) {
+      if (j < 0 || j >= gBoard.length) continue
+      var currCell = gBoard[i][j]
+      if (currCell === gBoard[row][col] || currCell.isShown) continue
+      currCell.isShown = true
+      gGame.shownCount += 1
+      var cellHTML = document.querySelector(`.cell-${i}-${j}`)
+      cellHTML.innerText = currCell.minesAroundCount
+    }
+  }
 }
 
 function getRandomIntInclusive(min, max) {
