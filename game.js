@@ -111,11 +111,14 @@ function cellClicked(elCell, i, j) {
     }
     elCell.innerText = MINE
   } else {
-    elCell.innerText = cell.minesAroundCount
+    elCell.className += ' opened'
     gGame.shownCount += 1
     cell.isShown = true
     if (cell.minesAroundCount === 0) {
+      elCell.innerText = ''
       expandFull(i, j)
+    } else {
+      elCell.innerText = cell.minesAroundCount
     }
   }
 
@@ -181,7 +184,9 @@ function expandFull(row, col) {
       gGame.shownCount += 1
       var cellHTML = document.querySelector(`.cell-${i}-${j}`)
       cellHTML.innerText = currCell.minesAroundCount
+      cellHTML.className += ' opened'
       if (currCell.minesAroundCount === 0) {
+        cellHTML.innerText = ''
         expandFull(i, j)
       }
     }
@@ -237,12 +242,13 @@ function updateTimer() {
 function startLevel(elButton) {
   clearInterval(gSecInterval)
 
-  var size = elButton.dataset.size
-  var mines = elButton.dataset.mines
+  var size = +elButton.dataset.size
+  var mines = +elButton.dataset.mines
 
   gLevel.SIZE = size
   gLevel.MINES = mines
-  if (size !== 4) gLevel.LIVES = 3
+
+  gLevel.LIVES = size !== 4 ? 3 : 1
 
   initGame()
 }
@@ -276,3 +282,66 @@ function getHighestScore() {
     }
   }
 }
+
+// function getSafeClick() {
+//   var safeClick = false
+
+//   var i
+//   var j
+
+//   while (!safeClick) {
+//     var i = getRandomIntInclusive(0, gBoard.length - 1)
+//     var j = getRandomIntInclusive(0, gBoard.length - 1)
+//     if (!gBoard[i][j].isMine) safeClick = true
+//   }
+
+//   var cellHTML = document.querySelector(`.cell-${i}-${j}`)
+//   cellHTML.style.backgroundColor = 'blue'
+
+//   setTimeout(() => {
+//     cellHTML.style.backgroundColor = 'white'
+//   }, 3000)
+// }
+
+// function undoClick() {
+//   if (gMoves.length < 1) return
+
+//   var lastClick = gMoves.pop()
+
+//   var i = lastClick.i
+//   var j = lastClick.j
+
+//   var cell = document.querySelector(`.cell-${i}-${j}`)
+
+//   if (lastClick.text === '🚩') {
+//     gBoard[i][j].isMarked = false
+
+//     cell.innerText = ''
+//   } else if (lastClick.text === '') {
+//     gBoard[i][j].isMarked = true
+//     cell.innerText = '🚩'
+//   } else if (lastClick.text === '0') {
+//     undoExpand(i, j)
+//   } else {
+//     gBoard[i][j].isShown = false
+//     cell.innerText = ''
+//   }
+// }
+
+// function undoExpand(row, col) {
+//   for (var i = row - 1; i <= row + 1; i++) {
+//     if (i < 0 || i >= gBoard.length) continue
+//     for (var j = col - 1; j <= col + 1; j++) {
+//       if (j < 0 || j >= gBoard.length) continue
+//       var currCell = gBoard[i][j]
+//       if (currCell === gBoard[row][col]) continue
+//       currCell.isShown = false
+//       gGame.shownCount -= 1
+//       var cellHTML = document.querySelector(`.cell-${i}-${j}`)
+//       cellHTML.innerText = ''
+//       if (currCell.minesAroundCount === 0) {
+//         undoExpand(i, j)
+//       }
+//     }
+//   }
+// }
