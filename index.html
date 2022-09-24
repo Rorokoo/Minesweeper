@@ -5,14 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styling.css" /> 
+    <script src="https://kit.fontawesome.com/64a8faa3b3.js" crossorigin="anonymous"></script>
     <title>Minesweeper</title>
 </head>
-<body onload="initGame()">
+<body class="light-mode" onload="initGame()">
 
    <div class="levels">
-    <button onclick= "startLevel(this)" data-size="4" data-mines="2">Easy(4X4) </button>
-    <button onclick= "startLevel(this)" data-size="8" data-mines="14">Medium(8X8)</button>
-    <button onclick= "startLevel(this)" data-size="12" data-mines="32">Hard(12X12)</button>
+    <button onclick= "startLevel(this)" data-level="easy" data-size="4" data-mines="2" >Easy(4X4) </button>
+    <button onclick= "startLevel(this)" data-level= "medium" data-size="8" data-mines="14">Medium(8X8)</button>
+    <button onclick= "startLevel(this)" data-level="hard" data-size="12" data-mines="32">Hard(12X12)</button>
 </div>
 <div class="lives">LIVES: <span></span></div>
 <div class="tools">
@@ -20,12 +21,18 @@
     <button class="restart-button" onclick="initGame()">🙂</button>
     <span class="timer">⏱<span></span></span>
 </div>
+<div class="board-layout"> 
 <div class="helpers">
-    <button onclick= "getSafeClick()">Safe Click</button>
-    <button onclick= "undoClick()">Undo</button>
-    <button>Dark Mode</button>
+    <button class="safe-click" onclick= "getSafeClick()">Hint</button>
+    <button  class="undo" onclick= "undoClick()">Undo</button>
 </div>
-    <div class="board-container"></div>
+<div class="board-container"></div>
+<div class= "game-modes">
+    <i class=" fas fa-regular fa-lightbulb light-switch" onClick= "changeLight(this)"><span> Dark Mode</span></i>
+    <button class="seven-boom" onClick= "on7Boom()">7 Boom! </button>
+</div>
+</div>
+
     <script src="game.js"></script>   
 
 </body>
