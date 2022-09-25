@@ -465,7 +465,8 @@ function getMegaHint(cells) {
   setTimeout(() => {
     var peakedCells = document.querySelectorAll('.peaked')
     for (var i = 0; i < peakedCells.length; i++) {
-      peakedCells[i].innerText = ''
+      if (!peakedCells[i].className.includes('open'))
+        peakedCells[i].innerText = ''
       peakedCells[i].className = peakedCells[i].className.replace('peaked', '')
     }
   }, 2000)
