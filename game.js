@@ -16,6 +16,10 @@ var gMineLocations = []
 
 var gSevenBoom = false
 
+var gMegaHint = false
+
+var gMegaHintCells = []
+
 function initGame() {
   clearInterval(gSecInterval)
   gGame = {
@@ -35,10 +39,12 @@ function initGame() {
   var restartButton = document.querySelector('.restart-button')
   var markedCount = document.querySelector('.marked-count')
   var lives = document.querySelector('.lives span')
+  var megaHintButton = document.querySelector('.mega-hint')
   timer.innerText = gGame.secsPassed
   restartButton.innerText = '🙂'
   markedCount.innerText = gGame.markedCount
   lives.innerText = gGame.livesCount
+  megaHintButton.className = 'mega-hint'
 }
 
 function buildBoard() {
@@ -100,10 +106,21 @@ function cellClicked(elCell, i, j) {
 
   if (!gGame.isOn) {
     gGame.isOn = true
-    putMines(gBoard, i, j)
+
+    if (gSevenBoom) putSevenBoomMines(gBoard, i, j)
+    else putMines(gBoard, i, j)
+
     setMinesNegsCount(gBoard)
     startTimer()
   }
+
+  if (gMegaHint) {
+    gMegaHintCells.push({ i: i, j: j })
+    if (gMegaHintCells.length === 2) getMegaHint(gMegaHintCells)
+
+    return
+  }
+
   if (cell.isMarked) return
 
   if (cell.isMine) {
@@ -202,7 +219,7 @@ function expandFull(row, col) {
   }
 }
 
-function putMines(board, idx1, idx2) {
+function putMines(idx1, idx2) {
   for (var y = 0; y < gLevel.MINES; y++) {
     var mineInCell = true
     while (mineInCell) {
@@ -211,11 +228,40 @@ function putMines(board, idx1, idx2) {
 
       if (i === idx1 && j === idx2) continue
 
-      if (!board[i][j].isMine) {
+      if (!gBoard[i][j].isMine) {
         mineInCell = false
-        board[i][j].isMine = true
+        gBoard[i][j].isMine = true
         gMineLocations.push({ i: i, j: j })
       }
+    }
+  }
+}
+
+function putSevenBoomMines(idx1, idx2) {
+  var num = 0
+  var mines = gLevel.MINES
+
+  for (var i = 0; i < gLevel.SIZE; i++) {
+    if (mines === 0) break
+    for (var j = 0; j < gLevel.SIZE; j++) {
+      if (mines === 0) break
+      if (i === idx1 && j === idx2) {
+        num += 1
+        continue
+      }
+
+      if (
+        (num % 7 === 0 || Math.floor(num / 10) === 7 || num % 10 === 7) &&
+        !gBoard[i][j].isMine &&
+        num !== 0
+      ) {
+        gBoard[i][j].isMine = true
+
+        gMineLocations.push({ i: i, j: j })
+
+        mines -= 1
+      }
+      num += 1
     }
   }
 }
@@ -317,6 +363,7 @@ function getSafeClick() {
 }
 
 function undoClick() {
+  if (!gGame.isOn) return
   if (gGame.moves.length < 1) return
 
   var lastClick = gGame.moves.pop()
@@ -326,6 +373,7 @@ function undoClick() {
 
   var marks = document.querySelector('.marked-count')
   var cell = document.querySelector(`.cell-${i}-${j}`)
+  var lives = document.querySelector('.lives span')
 
   if (gBoard[i][j].isMarked) {
     gBoard[i][j].isMarked = false
@@ -337,6 +385,11 @@ function undoClick() {
     gGame.markedCount -= 1
     marks.innerText = gGame.markedCount
     cell.innerText = '🚩'
+  } else if (gBoard[i][j].isExplode) {
+    gBoard[i][j].isExplode = false
+    gGame.livesCount += 1
+    lives.innerText = gGame.livesCount
+    cell.innerText = ''
   } else if (gBoard[i][j].minesAroundCount === 0 && gBoard[i][j].isShown) {
     gBoard[i][j].isShown = false
     cell.className = cell.className.replace('opened', '')
@@ -378,6 +431,42 @@ function changeLight(elButton) {
 
   elButton.style.color = page.className === 'light-mode' ? 'black' : 'yellow'
 }
+
 function on7Boom() {
-  alert('work in progress...')
+  gSevenBoom = true
+}
+
+function onMegaHint() {
+  gMegaHint = true
+}
+
+function getMegaHint(cells) {
+  var megaHintButton = document.querySelector('.mega-hint')
+
+  gMegaHint = false
+  megaHintButton.className += ' hidden'
+
+  var cell1 = cells[0]
+  var cell2 = cells[1]
+
+  for (var i = cell1.i; i <= cell2.i; i++) {
+    for (var j = cell1.j; j <= cell2.j; j++) {
+      var currCell = document.querySelector(`.cell-${i}-${j}`)
+      if (gBoard[i][j].isMine) {
+        currCell.innerText = MINE
+      }
+      if (!gBoard[i][j].isMine && gBoard[i][j].minesAroundCount > 0) {
+        currCell.innerText = gBoard[i][j].minesAroundCount
+      }
+      currCell.className += ' peaked'
+    }
+  }
+
+  setTimeout(() => {
+    var peakedCells = document.querySelectorAll('.peaked')
+    for (var i = 0; i < peakedCells.length; i++) {
+      peakedCells[i].innerText = ''
+      peakedCells[i].className = peakedCells[i].className.replace('peaked', '')
+    }
+  }, 2000)
 }
