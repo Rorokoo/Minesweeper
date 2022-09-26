@@ -16,23 +16,34 @@
     <button onclick= "startLevel(this)" data-level="hard" data-size="12" data-mines="32">Hard(12X12)</button>
 </div>
 <div class="lives">LIVES: <span></span></div>
+
 <div class="tools">
     <span class="mark">🚩<span class="marked-count"></span></span>
     <button class="restart-button" onclick="initGame()">🙂</button>
     <span class="timer">⏱<span></span></span>
 </div>
-<div class="board-layout"> 
-<div class="helpers">
-    <button class="safe-click" onclick= "getSafeClick()">Hint</button>
-    <button  class="undo" onclick= "undoClick()">Undo</button>
-    <button class="mega-hint"  onclick= "onMegaHint()">Mega Hint</button> 
-</div>
-<div class="board-container"></div>
-<div class= "game-modes">
-    <i class=" fas fa-regular fa-lightbulb light-switch" onClick= "changeLight(this)"><span> Dark Mode</span></i>
-    <button class="seven-boom" onClick= "on7Boom()">7 Boom! </button>
-</div>
-</div>
+
+<table class="board-container">
+<tbody>
+    <tr>
+        <td class="helpers" width="90px" >
+            <button class="safe-click" onclick= "getSafeClick()">HINT</button>
+            <button  class="undo" onclick= "undoClick()">UNDO</button>
+            <button class="mega-hint"  onclick= "onMegaHint()">MEGA HINT</button> </td>
+        </td>
+        <td class="game-board" ></td>
+        <td class="more-features"width="90px"> 
+         
+            <button class="seven-boom" onClick= "on7Boom()">7 Boom! </button>
+        </td> 
+    </tr>
+</tbody>
+</table>
+<i class=" fas fa-regular fa-lightbulb light-switch" onClick= "changeLight(this)"><span> Dark Mode</span></i>
+
+   
+
+
 
     <script src="game.js"></script>   
 

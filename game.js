@@ -96,7 +96,7 @@ function renderBoard(board) {
   }
   strHTML += '</tbody></table>'
 
-  var container = document.querySelector('.board-container')
+  var container = document.querySelector('.game-board')
   container.innerHTML = strHTML
 }
 
@@ -270,7 +270,7 @@ function loseGame() {
   gGame.isOn = false
 
   var restartButton = document.querySelector('.restart-button')
-  var board = document.querySelector('table')
+  var board = document.querySelector('.game-board table')
 
   restartButton.innerText = '🤯'
   board.style.pointerEvents = 'none'
