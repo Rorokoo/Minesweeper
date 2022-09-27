@@ -145,7 +145,6 @@ function cellClicked(elCell, i, j) {
   } else {
     if (!elCell.className.includes('opened')) elCell.className += ' opened'
     gGame.shownCount += 1
-    console.log(gGame.shownCount)
     cell.isShown = true
     if (cell.minesAroundCount === 0) {
       elCell.innerText = ''
