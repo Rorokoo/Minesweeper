@@ -199,7 +199,7 @@ function checkGameOver() {
 
   if (
     gGame.shownCount === gLevel.SIZE ** 2 - gLevel.MINES &&
-    gGame.markedCount === 0
+    !gGame.markedCount
   ) {
     gGame.isOn = false
     clearInterval(gSecInterval)
@@ -220,9 +220,10 @@ function expandFull(row, col) {
       if (currCell === gBoard[row][col] || currCell.isShown) continue
       currCell.isShown = true
       gGame.shownCount += 1
+
       var cellHTML = document.querySelector(`.cell-${i}-${j}`)
       cellHTML.innerText = currCell.minesAroundCount
-      cellHTML.className += ' opened'
+      cellHTML.className += ' opened neighbor'
       if (currCell.minesAroundCount === 0) {
         cellHTML.innerText = ''
         expandFull(i, j)
@@ -424,10 +425,14 @@ function undoClick(elButton) {
     cell.innerText = ''
   } else if (gBoard[i][j].minesAroundCount === 0 && gBoard[i][j].isShown) {
     gBoard[i][j].isShown = false
+    gGame.shownCount -= 1
+
     cell.className = cell.className.replace('opened', '')
+
     undoExpand(i, j)
   } else {
     gBoard[i][j].isShown = false
+    gGame.shownCount -= 1
     cell.className = cell.className.replace('opened', '')
     cell.innerText = ''
   }
@@ -439,12 +444,18 @@ function undoExpand(row, col) {
     for (var j = col - 1; j <= col + 1; j++) {
       if (j < 0 || j >= gBoard.length) continue
       var currCell = gBoard[i][j]
-      if (currCell === gBoard[row][col] || !currCell.isShown) continue
+      var cellHTML = document.querySelector(`.cell-${i}-${j}`)
+      if (
+        currCell === gBoard[row][col] ||
+        !currCell.isShown ||
+        !cellHTML.className.includes('neighbor')
+      )
+        continue
       currCell.isShown = false
       gGame.shownCount -= 1
-      var cellHTML = document.querySelector(`.cell-${i}-${j}`)
+
       if (currCell.minesAroundCount > 0) cellHTML.innerText = ''
-      cellHTML.className = cellHTML.className.replace('opened', '')
+      cellHTML.className = cellHTML.className.replace('opened neighbor', '')
       if (currCell.minesAroundCount === 0) {
         undoExpand(i, j)
       }
