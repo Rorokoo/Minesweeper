@@ -336,20 +336,21 @@ function getHighestScore() {
   if (gLevel.SIZE === 4) {
     prevScore = localStorage.getItem('EasyBest')
 
-    if (prevScore > gGame.secsPassed) {
+    console.log(prevScore)
+    if (prevScore > gGame.secsPassed || !prevScore) {
       localStorage.setItem('EasyBest', gGame.secsPassed)
     }
   }
   if (gLevel.SIZE === 8) {
     prevScore = localStorage.getItem('MediumBest')
-    if (prevScore > gGame.secsPassed) {
+    if (prevScore > gGame.secsPassed || !prevScore) {
       localStorage.setItem('MediumBest', gGame.secsPassed)
     }
   }
 
   if (gLevel.SIZE === 12) {
     prevScore = localStorage.getItem('HardBest')
-    if (prevScore > gGame.secsPassed) {
+    if (prevScore > gGame.secsPassed || !prevScore) {
       localStorage.setItem('HardBest', gGame.secsPassed)
     }
   }
