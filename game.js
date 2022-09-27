@@ -170,6 +170,8 @@ function cellMarked(event, i, j) {
 
   if (cell.isShown) return
 
+  if (cell.isExplode) return
+
   if (cell.isMarked) {
     cell.isMarked = false
     cell.isUnMarked = true
